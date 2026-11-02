@@ -1,0 +1,152 @@
+Official Website of National Center of Seismology
+Magnitude | Origin Time | Lat | Long | Depth | Region | Location | Type | Did You Felt Quake                                  -->
+2.9 | 2026-11-02 12:34:34 | 33.412 | 78.602 | 10 | Leh Ladakh, Ladakh | 88km NNW of Hanley, Jammu & Kashmir, India | Reviewed | Felt it
+3.9 | 2026-11-02 12:20:37 | 31.797 | 74.203 | 9 | Pakistan | 65km WNW of Amritsar, Punjab, India | Reviewed | Felt it
+3.3 | 2026-11-02 07:58:28 | 31.349 | 80.161 | 10 | Tibet | 105km NNE of Joshimath, Uttarakhand , India | Reviewed | Felt it
+3.4 | 2026-11-02 06:09:21 | 36.613 | 70.875 | 190 | Afghanistan | 61km SSE of Fayzabad, Afghanistan | Reviewed | Felt it
+2.7 | 2026-11-02 05:30:06 | 36.828 | 70.931 | 188 | Afghanistan | 45km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+2.2 | 2026-11-02 05:11:45 | 27.275 | 88.922 | 5 | Bhutan | 31km E of Gangtok, Sikkim | Reviewed | Felt it
+2.5 | 2026-11-02 03:52:33 | 26.589 | 90.475 | 10 | Chirang, Assam | 122km NNE of Tura, Meghalaya, India | Reviewed | Felt it
+3.4 | 2026-11-02 03:36:02 | 37.067 | 71.653 | 37 | Tajikistan | 97km E of Fayzabad, Afghanistan | Reviewed | Felt it
+2.9 | 2026-11-02 02:22:13 | 26.954 | 89.231 | 8 | Bhutan | 70km SW of Thimphu, Bhutan | Reviewed | Felt it
+4 | 2026-11-02 02:04:37 | 24.824 | 70.463 | 10 | Pakistan | 282km N of Rajkot, Gujarat, India | Reviewed | Felt it
+3.4 | 2026-11-02 01:53:39 | 25.669 | 90.625 | 10 | East Garo Hills, Meghalaya | 45km ENE of Tura, Meghalaya, India | Reviewed | Felt it
+3.5 | 2026-11-02 01:45:18 | 39.182 | 75.122 | 142 | Xinjiang | 413km S of Bishkek, Kyrgyzstan | Reviewed | Felt it
+3.4 | 2026-11-02 01:05:02 | 24.55 | 93.439 | 25 | Churachandpur, Manipur | 33km WSW of Bishnupur, Manipur, India | Reviewed | Felt it
+3.1 | 2026-11-02 00:33:21 | 24.546 | 93.448 | 29 | Churachandpur, Manipur | 32km WSW of Bishnupur, Manipur, India | Reviewed | Felt it
+4.2 | 2026-11-01 23:27:47 | 37.332 | 75.042 | 15 | Tajikistan | 324km NNW of Kargil, Laddakh, India | Reviewed | Felt it
+3.5 | 2026-11-01 19:12:29 | 26.114 | 89.79 | 5 | Dhubri, Assam | 78km NNW of Tura, Meghalaya, India | Reviewed | Felt it
+4.5 | 2026-11-01 16:33:45 | 36.226 | 70.222 | 149 | Afghanistan | 101km SSW of Fayzabad, Afghanistan | Reviewed | Felt it
+3.9 | 2026-11-01 15:05:21 | 30.56 | 92.919 | 15 | Tibet | 334km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+2 | 2026-11-01 14:56:35 | 21.43 | 79.314 | 5 | Nagpur, Maharashtra | 39km NE of Nagpur, Maharashtra, India | Reviewed | Felt it
+3.5 | 2026-11-01 14:09:47 | 28.148 | 88.204 | 12 | Tibet | 73km NW of Lachung, Sikkim, India | Reviewed | Felt it
+3.5 | 2026-11-01 06:12:13 | 36.658 | 71.982 | 10 | Afghanistan | 136km ESE of Fayzabad, Afghanistan | Reviewed | Felt it
+3.8 | 2026-11-01 03:35:44 | 33.685 | 86.188 | 10 | Tibet | 668km N of Kathmandu, Nepal | Reviewed | Felt it
+4 | 2026-10-31 19:06:11 | 33.179 | 91.868 | 10 | China | 622km N of Tawang, Arunachal Pradesh, India | Reviewed | Felt it
+2.4 | 2026-10-31 17:50:05 | 17.304 | 74.298 | 5 | Sangli, Maharashtra | 66km N of Kolhapur, Maharashtra, India | Reviewed | Felt it
+2.9 | 2026-10-31 13:49:49 | 25.038 | 91.393 | 15 | Bangladesh | 42km SW of Cherrapunjee, Meghalaya, India | Reviewed | Felt it
+4.2 | 2026-10-31 11:22:19 | 31.524 | 93.461 | 10 | Tibet | 411km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+3.5 | 2026-10-31 10:46:10 | 24.748 | 94.717 | 10 | Myanmar | 31km SE of Ukhrul, Manipur, India | Reviewed | Felt it
+2.9 | 2026-10-31 07:43:33 | 26.95 | 92.638 | 17 | Sonitpur, Assam | 36km NNW of Tezpur, Assam, India | Reviewed | Felt it
+3.4 | 2026-10-31 06:00:02 | 25.052 | 91.394 | 25 | Bangladesh | 41km SW of Cherrapunjee, Meghalaya, India | Reviewed | Felt it
+3.3 | 2026-10-31 04:07:55 | 25.997 | 95.415 | 108 | Myanmar | 97km ESE of Mokokchung, Nagaland, India | Reviewed | Felt it
+4 | 2026-10-31 03:55:14 | 31.489 | 93.116 | 15 | Tibet | 418km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-31 03:48:15 | 36.37 | 70.854 | 197 | Afghanistan | 85km SSE of Fayzabad, Afghanistan | Reviewed | Felt it
+2.1 | 2026-10-31 01:30:42 | 19.984 | 72.865 | 5 | Palghar, Maharashtra | 96km W of Nashik, Maharashtra, India | Reviewed | Felt it
+3.2 | 2026-10-31 00:54:45 | 20.013 | 72.918 | 7 | Palghar, Maharashtra | 91km W of Nashik, Maharashtra, India | Reviewed | Felt it
+3.9 | 2026-10-31 00:36:04 | 28.972 | 95.21 | 8 | Upper Siang, Arunachal Pradesh | 92km N of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-30 23:58:41 | 32.546 | 94.01 | 15 | China | 504km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3 | 2026-10-30 22:36:13 | 17.107 | 77.715 | 10 | Vikarabad, Telangana | 87km WSW of Hyderabad, Telangana, India | Reviewed | Felt it
+4 | 2026-10-30 22:22:09 | 32.035 | 93.122 | 15 | Tibet | 475km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+3 | 2026-10-30 21:18:58 | 29.596 | 80.82 | 14 | Nepal | 58km E of Pithoragarh, Uttarakhand, India | Reviewed | Felt it
+3 | 2026-10-30 21:09:12 | 27.193 | 92.424 | 6 | West Kameng, Arunachal Pradesh | 69km SE of Tawang, Arunachal Pradesh, India | Reviewed | Felt it
+3 | 2026-10-30 20:15:54 | 23.58 | 93.968 | 93 | Myanmar | 66km ENE of Champhai, Mizoram, India | Reviewed | Felt it
+4.3 | 2026-10-30 09:18:54 | 30.992 | 99.57 | 10 | China | 459km NE of Changlang, Arunachal Pradesh, India | Reviewed | Felt it
+3.9 | 2026-10-30 08:00:32 | 34.226 | 70.093 | 150 | Afghanistan | 89km ESE of Kabul , Afghanistan | Reviewed | Felt it
+2.5 | 2026-10-30 05:14:05 | 33.517 | 75.655 | 10 | Kishtwar, Jammu and Kashmir | 63km SSE of Pahalgam, Jammu and Kashmir, India | Reviewed | Felt it
+2.3 | 2026-10-30 01:35:47 | 28.159 | 77.178 | 5 | Palwal, Haryana | 31km SSW of Faridabad, Haryana, India | Reviewed | Felt it
+3.6 | 2026-10-30 01:00:46 | 33.628 | 74.922 | 10 | Kulgam, Jammu and Kashmir | 52km SSE of Srinagar, Jammu and Kashmir, India | Reviewed | Felt it
+2.6 | 2026-10-29 20:46:04 | 20.389 | 72.895 | 11 | Valsad, Gujarat | 87km S of Surat, Gujarat, India | Reviewed | Felt it
+4.4 | 2026-10-29 17:31:53 | 35.155 | 73.525 | 10 | Pakistan | 145km NNW of Gulmarg, Jammu and Kashmir, India | Reviewed | Felt it
+5 | 2026-10-29 14:19:47 | 13.439 | 91.6 | 10 | Bay of Bengal | 150km W of Diglipur, Andaman and Nicobar island, India | Reviewed | Felt it
+3.9 | 2026-10-29 12:29:28 | 32.177 | 94.092 | 10 | Tibet | 462km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.1 | 2026-10-29 12:12:45 | 23.516 | 94.486 | 81 | Myanmar | 118km E of Champhai, Mizoram, India | Reviewed | Felt it
+3.9 | 2026-10-29 12:05:39 | 36.487 | 70.884 | 65 | Afghanistan | 74km SSE of Fayzabad, Afghanistan | Reviewed | Felt it
+3.8 | 2026-10-29 07:51:23 | 38.478 | 68.77 | 10 | Tajikistan | 9km S of Dushanbe, Tajikistan | Reviewed | Felt it
+4.2 | 2026-10-29 06:39:15 | 36.535 | 71.316 | 228 | Afghanistan | 92km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+2.5 | 2026-10-29 04:27:48 | 31.45 | 78.239 | 10 | Kinnaur, Himachal Pradesh | 82km NNW of Uttarkashi, Uttarakhand, India | Reviewed | Felt it
+4.3 | 2026-10-29 03:16:35 | 31.374 | 93.306 | 15 | Tibet | 400km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+3.6 | 2026-10-29 02:32:53 | 39.435 | 77.884 | 30 | Xinjiang | 472km SE of Bishkek, Kyrgyzstan | Reviewed | Felt it
+4 | 2026-10-29 01:44:51 | 37.101 | 69.458 | 103 | Afghanistan | 96km W of Fayzabad, Afghanistan | Reviewed | Felt it
+4.5 | 2026-10-28 23:18:25 | 32.656 | 94.064 | 15 | China | 515km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+2.7 | 2026-10-28 22:16:08 | 27.747 | 87.743 | 10 | Nepal | 63km NW of Yuksom, Sikkim, India | Reviewed | Felt it
+4 | 2026-10-28 20:16:42 | 31.439 | 93.422 | 15 | Tibet | 403km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-28 19:59:54 | 30.863 | 93.447 | 15 | Tibet | 342km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4.4 | 2026-10-28 18:03:31 | 36.519 | 71.386 | 191 | Afghanistan | 98km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+3.9 | 2026-10-28 17:11:31 | 24.429 | 83.31 | 10 | Sonbhadra, Uttar Pradesh | 144km N of Ambikapur, Chhattisgarh, India | Reviewed | Felt it
+3.9 | 2026-10-28 16:06:24 | 36.462 | 71.166 | 143 | Afghanistan | 89km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+4.6 | 2026-10-28 12:37:39 | 37.311 | 72.194 | 150 | Tajikistan | 147km E of Fayzabad, Afghanistan | Reviewed | Felt it
+4.4 | 2026-10-28 11:01:38 | 38.44 | 73.464 | 115 | Tajikistan | 296km ENE of Fayzabad, Afghanistan | Reviewed | Felt it
+4.3 | 2026-10-28 09:38:33 | 32.639 | 95.337 | 10 | China | 500km N of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.1 | 2026-10-28 07:56:06 | 25.544 | 91.056 | 10 | West Khasi Hills, Meghalaya | 74km WNW of Cherrapunjee, Meghalaya, India | Reviewed | Felt it
+3.5 | 2026-10-28 07:29:10 | 24.443 | 94.584 | 95 | Myanmar | 55km S of Ukhrul, Manipur, India | Reviewed | Felt it
+2.7 | 2026-10-28 04:35:44 | 26.068 | 90.417 | 5 | Goalpara, Assam | 65km NNE of Tura, Meghalaya, India | Reviewed | Felt it
+3.5 | 2026-10-28 02:49:52 | 36.848 | 71.167 | 95 | Afghanistan | 61km ESE of Fayzabad, Afghanistan | Reviewed | Felt it
+5 | 2026-10-28 00:27:54 | 32.658 | 93.917 | 10 | China | 518km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.5 | 2026-10-27 22:52:47 | 14.352 | 93.08 | 10 | Bay of Bengal | 121km N of Diglipur, Andaman and Nicobar island, India | Reviewed | Felt it
+4.6 | 2026-10-27 21:27:00 | 36.352 | 71.308 | 125 | Afghanistan | 107km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+4.6 | 2026-10-27 19:39:06 | 36.183 | 70.073 | 113 | Afghanistan | 110km SSW of Fayzabad, Afghanistan | Reviewed | Felt it
+2.8 | 2026-10-27 18:19:25 | 30.075 | 79.908 | 5 | Bageshwar, Uttarakhand | 62km NNW of Pithoragarh, Uttarakhand, India | Reviewed | Felt it
+3 | 2026-10-27 15:20:50 | 20.912 | 79.167 | 8 | Nagpur, Maharashtra | 27km SSE of Nagpur, Maharashtra, India | Reviewed | Felt it
+3.5 | 2026-10-27 15:17:12 | 22.338 | 82.513 | 7 | Korba, Chhattishgarh | 48km NE of Bilaspur, Chhattisgarh, India | Reviewed | Felt it
+2.3 | 2026-10-27 15:05:58 | 20.962 | 79.178 | 10 | Nagpur, Maharashtra | 22km SSE of Nagpur, Maharashtra, India | Reviewed | Felt it
+3 | 2026-10-27 14:59:23 | 31.8 | 78.221 | 5 | Kinnaur, Himachal Pradesh | 106km E of Kullu, Himachal Pradesh, India | Reviewed | Felt it
+2.7 | 2026-10-27 09:17:17 | 27.491 | 88.774 | 5 | Mangan, Sikkim | 22km S of Lachung, Sikkim, India | Reviewed | Felt it
+3.7 | 2026-10-27 04:43:43 | 26.547 | 96.264 | 139 | Myanmar | 138km SSW of Changlang, Arunachal Pradesh, India | Reviewed | Felt it
+3.9 | 2026-10-27 04:05:32 | 31.792 | 93.074 | 10 | Tibet | 451km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+3.9 | 2026-10-27 02:54:09 | 33.151 | 94.056 | 10 | China | 569km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-26 23:37:01 | 38.626 | 70.823 | 10 | Tajikistan | 171km N of Fayzabad, Afghanistan | Reviewed | Felt it
+3 | 2026-10-26 20:19:14 | 27.597 | 89.02 | 5 | Tibet | 29km ESE of Lachung, Sikkim, India | Reviewed | Felt it
+4.3 | 2026-10-26 18:08:35 | 33.83 | 94.156 | 15 | China | 641km N of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+2.9 | 2026-10-26 11:52:59 | 25.514 | 90.723 | 5 | East Garo Hills, Meghalaya | 52km E of Tura, Meghalaya, India | Reviewed | Felt it
+4.2 | 2026-10-26 11:15:51 | 26.849 | 68.767 | 77 | Pakistan | 428km W of Jodhpur, Rajasthan, India | Reviewed | Felt it
+4.2 | 2026-10-26 08:58:15 | 32.66 | 93.911 | 10 | China | 519km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.6 | 2026-10-26 08:07:52 | 36.491 | 71.325 | 79 | Afghanistan | 96km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+3 | 2026-10-26 06:38:24 | 25.602 | 90.695 | 5 | East Garo Hills, Meghalaya | 50km ENE of Tura, Meghalaya, India | Reviewed | Felt it
+3.3 | 2026-10-26 06:28:40 | 27.41 | 88.05 | 10 | Nepal | 17km WNW of Yuksom, Sikkim, India | Reviewed | Felt it
+3.6 | 2026-10-26 06:06:13 | 36.851 | 73.141 | 15 | Pakistan | 231km E of Fayzabad, Afghanistan | Reviewed | Felt it
+3.9 | 2026-10-26 05:07:35 | 24.863 | 94.915 | 115 | Myanmar | 44km E of Ukhrul, Manipur, India | Reviewed | Felt it
+4.1 | 2026-10-26 04:34:07 | 32.404 | 94.409 | 10 | Tibet | 481km N of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.5 | 2026-10-26 03:31:41 | 32.065 | 93.728 | 10 | Tibet | 460km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+2.6 | 2026-10-26 01:04:07 | 25.461 | 91.407 | 10 | South West Khasi Hills, Meghalaya | 38km WNW of Cherrapunjee, Meghalaya, India | Reviewed | Felt it
+5.5 | 2026-10-25 23:14:22 | 36.157 | 71.24 | 129 | Afghanistan | 121km SSE of Fayzabad, Afghanistan | Reviewed | Felt it
+4.5 | 2026-10-25 22:16:47 | 32.869 | 94.059 | 15 | China | 538km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.9 | 2026-10-25 20:55:46 | 32.685 | 93.925 | 10 | China | 521km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.8 | 2026-10-25 17:47:06 | 32.06 | 93.531 | 10 | Tibet | 466km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.1 | 2026-10-25 17:25:33 | 31.609 | 93.249 | 10 | Tibet | 426km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+5.9 | 2026-10-25 16:56:00 | 32.488 | 93.997 | 10 | China | 498km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+5.2 | 2026-10-25 16:54:15 | 32.568 | 93.92 | 10 | China | 509km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.6 | 2026-10-25 13:52:23 | 30.951 | 93.099 | 10 | Tibet | 364km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+3.7 | 2026-10-25 12:51:44 | 29.574 | 80.292 | 11 | Pithoragarh, Uttarakhand | 7km E of Pithoragarh, Uttarakhand, India | Reviewed | Felt it
+2.5 | 2026-10-25 05:53:32 | 27.151 | 89.696 | 17 | Bhutan | 36km S of Thimphu, Bhutan | Reviewed | Felt it
+3.9 | 2026-10-25 05:48:06 | 31.403 | 93.078 | 10 | Tibet | 411km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4.3 | 2026-10-25 04:38:08 | 36.315 | 71.701 | 107 | Pakistan | 134km SE of Fayzabad, Afghanistan | Reviewed | Felt it
+3.5 | 2026-10-25 03:42:32 | 36.451 | 70.118 | 226 | Afghanistan | 81km SSW of Fayzabad, Afghanistan | Reviewed | Felt it
+4.1 | 2026-10-25 02:21:34 | 35.131 | 69.284 | 70 | Afghanistan | 64km N of Kabul , Afghanistan | Reviewed | Felt it
+3.6 | 2026-10-25 02:04:55 | 36.354 | 70.035 | 150 | Afghanistan | 94km SSW of Fayzabad, Afghanistan | Reviewed | Felt it
+4.4 | 2026-10-25 01:04:18 | 28.737 | 88.393 | 15 | Tibet | 121km NNW of Lachung, Sikkim, India | Reviewed | Felt it
+2.4 | 2026-10-24 21:17:06 | 20.075 | 72.964 | 6 | Palghar, Maharashtra | 86km W of Nashik, Maharashtra, India | Reviewed | Felt it
+2.1 | 2026-10-24 20:23:50 | 20.093 | 72.962 | 5 | Palghar, Maharashtra | 87km W of Nashik, Maharashtra, India | Reviewed | Felt it
+2.7 | 2026-10-24 20:20:14 | 27.878 | 87.891 | 10 | Nepal | 65km NNW of Yuksom, Sikkim, India | Reviewed | Felt it
+4.3 | 2026-10-24 18:56:40 | 32.271 | 93.568 | 10 | Tibet | 487km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.5 | 2026-10-24 16:06:47 | 27.871 | 87.346 | 10 | Tibet | 102km WNW of Yuksom, Sikkim, India | Reviewed | Felt it
+3.6 | 2026-10-24 15:59:38 | 28.014 | 87.3 | 10 | Tibet | 115km NW of Yuksom, Sikkim, India | Reviewed | Felt it
+4.6 | 2026-10-24 15:46:28 | 23.232 | 93.847 | 92 | Myanmar | 58km ESE of Champhai, Mizoram, India | Reviewed | Felt it
+4.1 | 2026-10-24 15:36:44 | 21.867 | 95.697 | 10 | Myanmar | 26km W of Burma, Myanmar | Reviewed | Felt it
+5.4 | 2026-10-24 14:09:59 | 32.532 | 93.723 | 15 | Tibet | 510km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.2 | 2026-10-24 10:09:56 | 39.768 | 75.918 | 10 | Xinjiang | 363km SSE of Bishkek, Kyrgyzstan | Reviewed | Felt it
+4.4 | 2026-10-24 09:25:54 | 34.18 | 94.818 | 10 | China | 672km N of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.5 | 2026-10-24 05:38:12 | 31.485 | 93.528 | 10 | Tibet | 405km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+2.4 | 2026-10-24 04:54:08 | 33.127 | 76.006 | 5 | Kishtwar, Jammu and Kashmir | 101km E of Katra, Jammu and Kashmir, India | Reviewed | Felt it
+4.6 | 2026-10-24 04:09:08 | 32.92 | 93.761 | 10 | China | 550km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-24 03:39:55 | 36.324 | 70.736 | 210 | Afghanistan | 87km S of Fayzabad, Afghanistan | Reviewed | Felt it
+2.9 | 2026-10-24 03:29:42 | 13.497 | 77.42 | 5 | Chikkaballapura, Karnataka | 61km NNW of Bengaluru, Karnataka, India | Reviewed | Felt it
+2.8 | 2026-10-24 03:11:43 | 33.11 | 76.101 | 5 | Doda, Jammu and Kashmir | 101km NNW of Dharamshala, Himachal Pradesh, India | Reviewed | Felt it
+4.6 | 2026-10-24 02:07:47 | 32.322 | 93.888 | 10 | Tibet | 483km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-24 01:08:02 | 31.942 | 93.701 | 15 | Tibet | 448km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.8 | 2026-10-23 22:36:23 | 26.031 | 95.478 | 115 | Myanmar | 101km ESE of Mokokchung, Nagaland, India | Reviewed | Felt it
+4.1 | 2026-10-23 20:48:47 | 32.453 | 93.102 | 10 | China | 520km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4.2 | 2026-10-23 20:39:14 | 32.418 | 93.695 | 12 | Tibet | 499km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.3 | 2026-10-23 20:11:16 | 32.78 | 94.017 | 13 | China | 529km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4.3 | 2026-10-23 19:44:05 | 33.054 | 93.746 | 100 | China | 565km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.6 | 2026-10-23 18:58:22 | 27.285 | 88.071 | 5 | Gyalshing, Sikkim | 17km WSW of Pelling, Sikkim, India | Reviewed | Felt it
+4.2 | 2026-10-23 17:15:36 | 32.522 | 93.975 | 150 | China | 502km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-23 16:38:49 | 32.578 | 94.186 | 80 | China | 504km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+3.1 | 2026-10-23 16:04:04 | 25.562 | 91.234 | 10 | West Khasi Hills, Meghalaya | 59km WNW of Cherrapunjee, Meghalaya, India | Reviewed | Felt it
+4.1 | 2026-10-23 14:03:19 | 32.402 | 93.675 | 10 | Tibet | 498km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-23 12:22:24 | 32.132 | 93.475 | 10 | Tibet | 476km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-23 11:18:06 | 24.933 | 95.194 | 130 | Myanmar | 72km E of Ukhrul, Manipur, India | Reviewed | Felt it
+3 | 2026-10-23 09:01:49 | 13.368 | 77.563 | 10 | Bengaluru Rural, Karnataka | 44km N of Bengaluru, Karnataka, India | Reviewed | Felt it
+4.1 | 2026-10-23 08:43:56 | 32.182 | 93.357 | 15 | Tibet | 484km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
+4.6 | 2026-10-23 08:23:47 | 32.26 | 93.714 | 10 | Tibet | 481km NNW of Pangin, Arunachal Pradesh, India | Reviewed | Felt it
+4 | 2026-10-23 07:46:49 | 30.541 | 93.267 | 15 | Tibet | 316km NNW of Basar, Arunachal Pradesh, India | Reviewed | Felt it
