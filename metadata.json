@@ -1,5 +1,5 @@
 {
-  "name": "Remix Remix Remix SeismoPulse Studio",
+  "name": "SeismoPulse Studio",
   "description": "Industry-grade seismic analysis platform and interactive visualizer featuring real-time USGS mapping, tectonic fault overlays, Power BI analytics, MongoDB pipeline workbench, predictive modeling, and emergency safety tools.",
   "requestFramePermissions": [],
   "majorCapabilities": [

@@ -66,6 +66,41 @@ function extractRegion(place: string): string {
   return raw || 'Offshore/Global';
 }
 
+// Compact metric energy formatting (TJ, PJ, EJ, GJ)
+export function formatEnergyCompact(energyTJ: number): { value: string; unit: string; fullText: string } {
+  if (!energyTJ || isNaN(energyTJ) || energyTJ <= 0) {
+    return { value: '0.0', unit: 'TJ', fullText: '0.0 TJ' };
+  }
+  if (energyTJ >= 1_000_000) {
+    const val = (energyTJ / 1_000_000).toFixed(2);
+    return { value: val, unit: 'EJ', fullText: `${val} EJ` }; // Exajoules (10^18 J)
+  }
+  if (energyTJ >= 1_000) {
+    const val = (energyTJ / 1_000).toFixed(1);
+    return { value: val, unit: 'PJ', fullText: `${val} PJ` }; // Petajoules (10^15 J)
+  }
+  if (energyTJ >= 1) {
+    const val = energyTJ < 10 ? energyTJ.toFixed(2) : energyTJ < 100 ? energyTJ.toFixed(1) : Math.round(energyTJ).toLocaleString();
+    return { value: val, unit: 'TJ', fullText: `${val} TJ` };
+  }
+  const val = (energyTJ * 1000).toFixed(0);
+  return { value: val, unit: 'GJ', fullText: `${val} GJ` };
+}
+
+export function formatTntCompact(megatons: number): string {
+  if (!megatons || isNaN(megatons) || megatons <= 0) return '~0 Mt TNT equiv.';
+  if (megatons >= 1000) {
+    return `~${(megatons / 1000).toFixed(2)} Gt TNT equiv.`;
+  }
+  if (megatons >= 1) {
+    return `~${megatons.toFixed(2)} Mt TNT equiv.`;
+  }
+  if (megatons >= 0.001) {
+    return `~${(megatons * 1000).toFixed(1)} kt TNT equiv.`;
+  }
+  return `~${Math.round(megatons * 1e6).toLocaleString()} t TNT equiv.`;
+}
+
 interface CatastropheBenchmark {
   id: string;
   name: string;
@@ -234,7 +269,19 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
   const [catastropheMetric, setCatastropheMetric] = useState<'deaths' | 'economic'>('deaths');
   const [regionRankMetric, setRegionRankMetric] = useState<'count' | 'energy' | 'maxMag'>('count');
   const [hoveredPoint, setHoveredPoint] = useState<any | null>(null);
+  const [hoveredEnergy, setHoveredEnergy] = useState<any | null>(null);
+  const [hoveredWadati, setHoveredWadati] = useState<any | null>(null);
   const [selectedHistoricalQuake, setSelectedHistoricalQuake] = useState<HistoricalQuake>(HISTORICAL_QUAKES[0]);
+
+  // Extract all distinct countries/regions from the dataset
+  const availableRegions = useMemo(() => {
+    const set = new Set<string>();
+    earthquakes.forEach((eq) => {
+      const reg = extractRegion(eq.place);
+      if (reg && reg !== 'Offshore/Global') set.add(reg);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [earthquakes]);
 
   // Filter dataset by active slicers
   const filteredData = useMemo(() => {
@@ -257,11 +304,25 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
     });
   }, [earthquakes, selectedMagBin, selectedDepthStrata, selectedRegion]);
 
-  // DAX-style KPI Calculations
+  // DAX-style KPI Calculations & Gutenberg-Richter Seismological Stress Index
   const kpis = useMemo(() => {
     const count = filteredData.length;
     if (count === 0) {
-      return { count: 0, maxMag: 0, totalEnergyTJ: 0, tntMegatons: 0, avgDepth: 0, tsunamiAlerts: 0, bValue: 0, aValue: 0 };
+      return {
+        count: 0,
+        maxMag: 0,
+        totalEnergyTJ: 0,
+        compactEnergy: { value: '0.0', unit: 'TJ', fullText: '0.0 TJ' },
+        tntMegatons: 0,
+        compactTnt: '~0 Mt TNT',
+        avgDepth: 0,
+        tsunamiAlerts: 0,
+        bValue: 1.0,
+        aValue: 0,
+        stressIndex: 1.0,
+        stressLabel: 'No Data',
+        grPoints: []
+      };
     }
 
     let maxMag = 0;
@@ -271,29 +332,71 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
 
     filteredData.forEach((eq) => {
       if (eq.magnitude > maxMag) maxMag = eq.magnitude;
-      totalEnergyJoules += eq.energyJoules;
+      totalEnergyJoules += eq.energyJoules || 0;
       sumDepth += eq.depth;
       if (eq.tsunami === 1) tsunamiCount++;
     });
 
-    // Gutenberg-Richter Law: log10(N) = a - b*M
-    // Calculate b-value via Aki (1965) maximum likelihood formula:
-    // b = (log10(e)) / (mean(M) - M_min)
-    const mags = filteredData.map((d) => d.magnitude);
-    const minM = Math.min(...mags);
-    const meanM = mags.reduce((a, b) => a + b, 0) / mags.length;
-    const bValue = meanM > minM ? Math.log10(Math.E) / (meanM - minM) : 1.0;
-    const aValue = Math.log10(count) + bValue * minM;
+    const totalEnergyTJ = totalEnergyJoules / 1e12;
+    const tntMegatons = totalEnergyJoules / (4.184e9 * 1e6);
+
+    // Gutenberg-Richter Recurrence Law: log10(N >= M) = a - b*M
+    // Exactly computed from cumulative magnitude steps so the graph points and regression line match 100%
+    const mags = filteredData.map((d) => d.magnitude).filter((m) => !isNaN(m) && m > 0);
+    const step = 0.5;
+    const minM = Math.max(2.0, Math.floor(Math.min(...(mags.length > 0 ? mags : [2.0]))));
+    const maxM = Math.min(8.5, Math.ceil(Math.max(...(mags.length > 0 ? mags : [8.0]))));
+
+    const points: { mag: number; count: number; logN: number }[] = [];
+    for (let m = minM; m <= maxM; m = Math.round((m + step) * 10) / 10) {
+      const c = mags.filter((x) => x >= m).length;
+      if (c > 0) {
+        points.push({ mag: m, count: c, logN: Math.log10(c) });
+      }
+    }
+
+    let b = 1.0;
+    let a = 3.0;
+
+    if (points.length >= 2) {
+      const n = points.length;
+      const sumX = points.reduce((acc, p) => acc + p.mag, 0);
+      const sumY = points.reduce((acc, p) => acc + p.logN, 0);
+      const sumXY = points.reduce((acc, p) => acc + p.mag * p.logN, 0);
+      const sumX2 = points.reduce((acc, p) => acc + p.mag * p.mag, 0);
+      const denom = n * sumX2 - sumX * sumX;
+      if (denom !== 0) {
+        const slope = (n * sumXY - sumX * sumY) / denom;
+        b = -slope;
+        a = (sumY - slope * sumX) / n;
+      }
+    }
+
+    // Stress Index is inversely proportional to b-value: SI = 1.0 / b
+    const stressIndex = b > 0 ? Math.round((1.0 / b) * 100) / 100 : 1.0;
+    let stressLabel = 'Balanced Tectonic Stress';
+    if (b < 0.6) {
+      stressLabel = 'High Shear Stress (Mega-Quake Weighting)';
+    } else if (b < 0.85) {
+      stressLabel = 'High Accumulated Shear Stress';
+    } else if (b > 1.15) {
+      stressLabel = 'Low Stress / Swarms';
+    }
 
     return {
       count,
       maxMag,
-      totalEnergyTJ: totalEnergyJoules / 1e12,
-      tntMegatons: totalEnergyJoules / (4.184e9 * 1e6),
+      totalEnergyTJ,
+      compactEnergy: formatEnergyCompact(totalEnergyTJ),
+      tntMegatons,
+      compactTnt: formatTntCompact(tntMegatons),
       avgDepth: sumDepth / count,
       tsunamiAlerts: tsunamiCount,
-      bValue: Math.round(bValue * 100) / 100,
-      aValue: Math.round(aValue * 100) / 100
+      bValue: Math.round(b * 100) / 100,
+      aValue: Math.round(a * 100) / 100,
+      stressIndex,
+      stressLabel,
+      grPoints: points
     };
   }, [filteredData]);
 
@@ -360,21 +463,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
   }, [earthquakes]);
 
   // Gutenberg-Richter Cumulative Points: N(M >= m) vs m
-  const grPoints = useMemo(() => {
-    const step = 0.5;
-    const points: { mag: number; count: number; logN: number }[] = [];
-    for (let m = 2.0; m <= 8.0; m += step) {
-      const count = filteredData.filter((eq) => eq.magnitude >= m).length;
-      if (count > 0) {
-        points.push({
-          mag: m,
-          count,
-          logN: Math.log10(count)
-        });
-      }
-    }
-    return points;
-  }, [filteredData]);
+  const grPoints = kpis.grPoints || [];
 
   // Depth Strata Breakdown
   const depthStrataStats = useMemo(() => {
@@ -395,26 +484,31 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
     const sorted = [...filteredData].sort((a, b) => a.time - b.time);
     let cumulative = 0;
     return sorted.map((eq) => {
-      cumulative += eq.energyJoules / 1e12; // in TJ
+      const eqTJ = (eq.energyJoules || 0) / 1e12;
+      cumulative += eqTJ;
       return {
         id: eq.id,
         time: eq.time,
-        formattedTime: eq.formattedTime.substring(5, 16),
+        formattedTime: eq.formattedTime ? eq.formattedTime.substring(0, 10) : new Date(eq.time).toISOString().substring(0, 10),
         magnitude: eq.magnitude,
         place: eq.place,
-        cumulativeTJ: cumulative
+        energyTJ: eqTJ,
+        cumulativeTJ: cumulative,
+        eq
       };
     });
   }, [filteredData]);
 
   // Wadati-Benioff Scatter Data (Depth vs Longitude)
   const wadatiPoints = useMemo(() => {
-    return filteredData.slice(0, 120).map((eq) => ({
+    return filteredData.slice(0, 200).map((eq) => ({
       id: eq.id,
       lon: eq.longitude,
+      lat: eq.latitude,
       depth: Math.min(650, eq.depth),
       mag: eq.magnitude,
-      place: eq.place
+      place: eq.place,
+      eq
     }));
   }, [filteredData]);
 
@@ -447,16 +541,97 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
         </div>
       </div>
 
+      {/* Interactive Country & Jurisdiction Slicer Ribbon */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider flex items-center gap-1.5">
+              <Globe2 className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Country / Jurisdiction Slicer:</span>
+            </span>
+
+            {/* Country Dropdown */}
+            <select
+              value={selectedRegion || ''}
+              onChange={(e) => setSelectedRegion(e.target.value ? e.target.value : null)}
+              className="bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold px-3 py-1.5 text-slate-800 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 cursor-pointer"
+            >
+              <option value="">🌐 All Regions (Show Total / Global)</option>
+              {availableRegions.map((reg) => (
+                <option key={reg} value={reg}>
+                  {reg}
+                </option>
+              ))}
+            </select>
+
+            {/* Quick Slicer Button for Total */}
+            <button
+              type="button"
+              onClick={() => setSelectedRegion(null)}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                !selectedRegion
+                  ? 'bg-amber-600 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+              }`}
+            >
+              Show in Total (Global View)
+            </button>
+          </div>
+
+          {/* Slicer Quick Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
+            {['India', 'Japan', 'Indonesia', 'Chile', 'California', 'Turkey'].map((quickReg) => {
+              const isSelected = selectedRegion?.toLowerCase() === quickReg.toLowerCase();
+              return (
+                <button
+                  key={quickReg}
+                  type="button"
+                  onClick={() => setSelectedRegion(isSelected ? null : quickReg)}
+                  className={`px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-amber-600 text-white font-bold shadow-2xs'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  }`}
+                >
+                  {quickReg}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Active Filter Banner with clear "Show Total" action */}
+        {selectedRegion && (
+          <div className="flex items-center justify-between bg-amber-50/90 border border-amber-300 px-3.5 py-2 rounded-xl text-xs">
+            <div className="flex items-center gap-2 text-amber-950">
+              <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span>
+              <span>
+                Currently showcasing specific dashboard for: <strong className="font-extrabold text-amber-900 underline">{selectedRegion}</strong> ({filteredData.length} events analyzed)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedRegion(null)}
+              className="px-3 py-1 bg-white hover:bg-amber-100 text-amber-900 font-bold border border-amber-300 rounded-lg shadow-2xs transition-colors cursor-pointer text-xs ml-3 whitespace-nowrap"
+            >
+              ✕ Clear &amp; Show in Total
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* DAX KPI Cards Strip */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {/* KPI 1 */}
+        {/* KPI 1: Event Count */}
         <div className="p-4 bg-white rounded-2xl border border-emerald-200/90 shadow-2xs space-y-1">
           <div className="text-[11px] font-mono uppercase tracking-wider text-emerald-700 font-bold">Total Quakes</div>
           <div className="text-3xl font-extrabold font-mono text-slate-900 tabular-nums">{kpis.count}</div>
-          <div className="text-[11px] text-slate-500 font-mono">Events analyzed</div>
+          <div className="text-[11px] text-slate-500 font-mono">
+            {selectedRegion ? `${selectedRegion} events` : 'Global events analyzed'}
+          </div>
         </div>
 
-        {/* KPI 2 */}
+        {/* KPI 2: Max Magnitude */}
         <div className="p-4 bg-white rounded-2xl border border-amber-200/90 shadow-2xs space-y-1">
           <div className="text-[11px] font-mono uppercase tracking-wider text-amber-700 font-bold">Strongest Quake</div>
           <div className="text-3xl font-extrabold font-mono text-amber-600 tabular-nums">
@@ -465,18 +640,18 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           <div className="text-[11px] text-slate-500 font-mono">Peak magnitude</div>
         </div>
 
-        {/* KPI 3 */}
+        {/* KPI 3: Total Energy (Metric Compact Formatted) */}
         <div className="p-4 bg-white rounded-2xl border border-cyan-200/90 shadow-2xs space-y-1">
           <div className="text-[11px] font-mono uppercase tracking-wider text-cyan-700 font-bold">Total Energy</div>
           <div className="text-3xl font-extrabold font-mono text-cyan-700 tabular-nums">
-            {kpis.totalEnergyTJ.toFixed(1)} <span className="text-xs text-slate-500 font-normal">TJ</span>
+            {kpis.compactEnergy.value} <span className="text-xs text-slate-500 font-normal">{kpis.compactEnergy.unit}</span>
           </div>
-          <div className="text-[11px] text-slate-500 font-mono">
-            ~{kpis.tntMegatons.toFixed(2)} Mt TNT equiv.
+          <div className="text-[11px] text-slate-500 font-mono truncate" title={kpis.compactTnt}>
+            {kpis.compactTnt}
           </div>
         </div>
 
-        {/* KPI 4 */}
+        {/* KPI 4: Average Depth */}
         <div className="p-4 bg-white rounded-2xl border border-sky-200/90 shadow-2xs space-y-1">
           <div className="text-[11px] font-mono uppercase tracking-wider text-sky-700 font-bold">Average Depth</div>
           <div className="text-3xl font-extrabold font-mono text-sky-800 tabular-nums">
@@ -485,13 +660,15 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           <div className="text-[11px] text-slate-500 font-mono">Underground focus</div>
         </div>
 
-        {/* KPI 5: Gutenberg b-value */}
+        {/* KPI 5: Corrected Stress Index & Gutenberg b-value */}
         <div className="p-4 bg-white rounded-2xl border border-violet-200/90 shadow-2xs space-y-1">
           <div className="text-[11px] font-mono uppercase tracking-wider text-violet-700 font-bold">Stress Index (b)</div>
           <div className="text-3xl font-extrabold font-mono text-violet-700 tabular-nums">
             {kpis.bValue.toFixed(2)}
           </div>
-          <div className="text-[11px] text-slate-500 font-mono">Normal baseline ~1.0</div>
+          <div className="text-[11px] text-slate-500 font-mono truncate" title={kpis.stressLabel}>
+            {kpis.stressLabel}
+          </div>
         </div>
 
         {/* KPI 6: Tsunami Flags */}
@@ -520,7 +697,17 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
             </div>
 
             {/* Metric Toggle & Image Export Buttons */}
-            <div className="flex items-center gap-1.5 self-start">
+            <div className="flex items-center gap-1.5 self-start flex-wrap">
+              {selectedRegion && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedRegion(null)}
+                  className="px-2 py-1 text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded cursor-pointer shadow-2xs"
+                  title="Show all regions in total"
+                >
+                  ✕ Show Total
+                </button>
+              )}
               <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10px] font-mono font-bold">
                 <button
                   type="button"
@@ -672,8 +859,8 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           </div>
 
           <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-1">
-            <span>DAX: [Rank] = RANKX(ALL(DimLocation[RegionName]), [TotalQuakes])</span>
-            <span className="text-amber-700 font-semibold">Click region to slice dashboard</span>
+            <span>Ranked tectonic fault corridors</span>
+            <span className="text-amber-700 font-semibold">Click any region to slice or use Country Slicer above</span>
           </div>
         </div>
 
@@ -832,7 +1019,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           </div>
 
           <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-1">
-            <span>DAX: [MortalityDisparity] = DIVIDE(SUM([Fatalities]), [TotalFinancialLossUSD])</span>
+            <span>Historical fatality vs. economic loss benchmarking</span>
             <span className="italic text-slate-600 truncate max-w-xs">Data verified: NOAA/NGDC Historic Archive</span>
           </div>
         </div>
@@ -854,7 +1041,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
 
             <div className="flex items-center gap-2 self-start">
               <span className="text-xs font-mono text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-lg font-bold">
-                b = {kpis.bValue.toFixed(2)} (Aki MLE)
+                b = {kpis.bValue.toFixed(2)} (Recurrence Slope)
               </span>
 
               <button
@@ -915,17 +1102,29 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
               </text>
 
               {/* Fitted Linear Regression Line */}
-              {grPoints.length >= 2 && (
-                <line
-                  x1={45 + ((grPoints[0].mag - 2) / 6) * 395}
-                  y1={180 - (Math.min(grPoints[0].logN, 3) / 3) * 155}
-                  x2={45 + ((grPoints[grPoints.length - 1].mag - 2) / 6) * 395}
-                  y2={180 - (Math.min(grPoints[grPoints.length - 1].logN, 3) / 3) * 155}
-                  stroke="#059669"
-                  strokeWidth="2.5"
-                  strokeDasharray="5,4"
-                />
-              )}
+              {grPoints.length >= 2 && (() => {
+                const firstPt = grPoints[0];
+                const lastPt = grPoints[grPoints.length - 1];
+                const startMag = firstPt.mag;
+                const endMag = lastPt.mag;
+                const y1Log = kpis.aValue - kpis.bValue * startMag;
+                const y2Log = kpis.aValue - kpis.bValue * endMag;
+                const x1 = 45 + ((startMag - 2) / 6) * 395;
+                const y1 = 180 - (Math.min(3, Math.max(0, y1Log)) / 3) * 155;
+                const x2 = 45 + ((endMag - 2) / 6) * 395;
+                const y2 = 180 - (Math.min(3, Math.max(0, y2Log)) / 3) * 155;
+                return (
+                  <line
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
+                    stroke="#059669"
+                    strokeWidth="2.5"
+                    strokeDasharray="5,4"
+                  />
+                );
+              })()}
 
               {/* Empirical Data Points */}
               {grPoints.map((pt, idx) => {
@@ -966,7 +1165,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           </div>
 
           <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-1">
-            <span>Formula: log₁₀ N = {kpis.aValue.toFixed(1)} - {kpis.bValue.toFixed(2)} * M</span>
+            <span>Formula: log₁₀ N = {kpis.aValue.toFixed(2)} - {kpis.bValue.toFixed(2)} * M</span>
             <span className="text-emerald-700 font-semibold">Gutenberg & Richter (1944)</span>
           </div>
         </div>
@@ -1067,7 +1266,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           </div>
 
           <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-1">
-            <span>DAX: [DepthPct] = DIVIDE(COUNTROWS(FILTER(FactEarthquakes, [DepthCategory] = &quot;Shallow&quot;)), [TotalQuakes])</span>
+            <span>Hypocentral focal depth stratification (USGS &amp; IRIS standards)</span>
             <span className="text-cyan-700 font-semibold">Click category to slice</span>
           </div>
         </div>
@@ -1083,13 +1282,13 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
                 <span>Figure 3.5 &mdash; Cumulative Seismic Energy Trajectory</span>
               </div>
               <h2 className="text-base font-bold text-slate-900 mt-0.5">
-                Seismic Moment Kinetic Release (Terajoules)
+                Seismic Moment Kinetic Release (Staircase Curve)
               </h2>
             </div>
 
             <div className="flex items-center gap-2 self-start">
-              <span className="text-xs font-mono text-rose-800 bg-rose-50 border border-rose-300 px-2 py-0.5 rounded font-bold">
-                {kpis.totalEnergyTJ.toFixed(1)} TJ Total
+              <span className="text-xs font-mono text-rose-800 bg-rose-50 border border-rose-300 px-2.5 py-1 rounded-lg font-bold">
+                {kpis.compactEnergy.fullText} Total
               </span>
 
               <button
@@ -1105,65 +1304,156 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           </div>
 
           <p className="text-xs text-slate-600 leading-relaxed">
-            Radical vertical stair-steps visualize the 31.62x energy multiplier per magnitude unit (log₁₀ E = 4.8 + 1.5M). Over 90% of global crustal kinetic strain is discharged in rare M7.5+ ruptures.
+            Staircase trajectory illustrates the exponential 31.62x energy multiplier per magnitude unit (log₁₀ E = 4.8 + 1.5M). Co-seismic jumps demonstrate how rare giant ruptures account for over 90% of cumulative kinetic strain, punctuated by inter-seismic quiescence.
           </p>
 
-          <div className="w-full bg-slate-50/70 rounded-xl border border-slate-200 p-3">
-            <svg id="svg-figure-3-5" className="w-full h-64 overflow-visible" viewBox="0 0 460 220">
-              <rect x="45" y="15" width="395" height="165" fill="#FFFFFF" rx="4" stroke="#E2E8F0" />
+          <div className="w-full bg-slate-50/70 rounded-xl border border-slate-200 p-3 relative">
+            <svg id="svg-figure-3-5" className="w-full h-64 overflow-visible" viewBox="0 0 490 230">
+              {/* Plot Background */}
+              <rect x="58" y="15" width="415" height="165" fill="#FFFFFF" rx="4" stroke="#E2E8F0" />
 
-              {/* Horizontal Grid */}
-              {[0, 0.25, 0.5, 0.75, 1].map((frac) => {
+              {/* Horizontal Grid & Metric Y-axis Labels */}
+              {[0, 0.25, 0.5, 0.75, 1.0].map((frac) => {
                 const y = 180 - frac * 165;
                 const val = frac * Math.max(kpis.totalEnergyTJ, 0.1);
+                const compactLabel = formatEnergyCompact(val).fullText;
                 return (
                   <g key={frac}>
-                    <line x1="45" y1={y} x2="440" y2={y} stroke="#E2E8F0" strokeDasharray="3,3" />
-                    <text x="38" y={y + 3} textAnchor="end" fill="#64748B" fontSize="9" fontFamily="monospace">
-                      {val.toFixed(0)} TJ
+                    <line x1="58" y1={y} x2="473" y2={y} stroke="#E2E8F0" strokeDasharray="3,3" />
+                    <text x="52" y={y + 3.5} textAnchor="end" fill="#64748B" fontSize="9" fontFamily="monospace">
+                      {compactLabel}
                     </text>
                   </g>
                 );
               })}
 
-              {/* Timeline Curve */}
+              {/* Time Milestones along bottom axis */}
+              {energyTimeline.length > 0 && (() => {
+                const indices = [0, Math.floor(energyTimeline.length * 0.5), energyTimeline.length - 1];
+                return indices.map((idx, i) => {
+                  const item = energyTimeline[idx];
+                  if (!item) return null;
+                  const x = 58 + (idx / Math.max(energyTimeline.length - 1, 1)) * 415;
+                  return (
+                    <g key={i}>
+                      <line x1={x} y1="180" x2={x} y2="185" stroke="#94A3B8" />
+                      <text
+                        x={x}
+                        y="198"
+                        textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'}
+                        fill="#64748B"
+                        fontSize="9"
+                        fontFamily="monospace"
+                      >
+                        {item.formattedTime}
+                      </text>
+                    </g>
+                  );
+                });
+              })()}
+
+              {/* Step-Wise Staircase Energy Trajectory */}
               {(() => {
                 if (energyTimeline.length < 2) return null;
                 const maxTJ = Math.max(kpis.totalEnergyTJ, 0.1);
-                const pts = energyTimeline.map((item, idx) => {
-                  const x = 45 + (idx / (energyTimeline.length - 1)) * 395;
+
+                // Build staircase points (step-after)
+                const stepPoints: string[] = [];
+                let prevY = 180;
+
+                energyTimeline.forEach((item, idx) => {
+                  const x = 58 + (idx / (energyTimeline.length - 1)) * 415;
                   const y = 180 - (item.cumulativeTJ / maxTJ) * 165;
-                  return `${x},${y}`;
+                  if (idx === 0) {
+                    stepPoints.push(`${x},${y}`);
+                  } else {
+                    stepPoints.push(`${x},${prevY}`);
+                    stepPoints.push(`${x},${y}`);
+                  }
+                  prevY = y;
                 });
+
+                const firstX = 58;
+                const lastX = 473;
+
                 return (
                   <>
+                    {/* Shaded Area under staircase */}
                     <polygon
-                      points={`45,180 ${pts.join(' ')} 440,180`}
+                      points={`${firstX},180 ${stepPoints.join(' ')} ${lastX},180`}
                       fill="rgba(244, 63, 94, 0.12)"
                     />
+                    {/* Stepped line */}
                     <polyline
-                      points={pts.join(' ')}
+                      points={stepPoints.join(' ')}
                       fill="none"
                       stroke="#E11D48"
                       strokeWidth="2.5"
                       strokeLinejoin="round"
                     />
+
+                    {/* Highlight Significant Step Markers */}
+                    {energyTimeline
+                      .filter((eq) => eq.magnitude >= 7.0 || eq.energyTJ / maxTJ > 0.12)
+                      .slice(0, 5)
+                      .map((eq, i) => {
+                        const idx = energyTimeline.indexOf(eq);
+                        const cx = 58 + (idx / (energyTimeline.length - 1)) * 415;
+                        const cy = 180 - (eq.cumulativeTJ / maxTJ) * 165;
+                        return (
+                          <g
+                            key={i}
+                            className="cursor-pointer group"
+                            onMouseEnter={() =>
+                              setHoveredEnergy({
+                                title: eq.place,
+                                mag: eq.magnitude,
+                                released: formatEnergyCompact(eq.energyTJ).fullText,
+                                cum: formatEnergyCompact(eq.cumulativeTJ).fullText,
+                                date: eq.formattedTime
+                              })
+                            }
+                            onMouseLeave={() => setHoveredEnergy(null)}
+                          >
+                            <circle cx={cx} cy={cy} r="4.5" fill="#BE123C" stroke="#FFFFFF" strokeWidth="1.5" />
+                            <rect x={cx - 15} y={cy - 20} width="30" height="15" rx="3" fill="#BE123C" opacity="0.9" />
+                            <text x={cx} y={cy - 9} textAnchor="middle" fill="#FFFFFF" fontSize="9" fontFamily="monospace" fontWeight="bold">
+                              M{eq.magnitude.toFixed(1)}
+                            </text>
+                          </g>
+                        );
+                      })}
                   </>
                 );
               })()}
 
-              <text x="242" y="210" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold">
-                Chronological Sequence of Ingested Seismic Events
+              {/* Axis Titles */}
+              <text x="265" y="214" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold">
+                Chronological Sequence &amp; Major Co-Seismic Rupture Steps
               </text>
-              <text x="14" y="95" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold" transform="rotate(-90 14,95)">
-                Cumulative Energy (TJ)
+              <text x="16" y="98" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold" transform="rotate(-90 16,98)">
+                Cumulative Energy Released
               </text>
             </svg>
+
+            {/* Hover Tooltip Overlay for Figure 3.5 */}
+            {hoveredEnergy && (
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm border border-rose-300 px-3 py-2 rounded-xl text-xs font-mono text-slate-800 shadow-xl pointer-events-none">
+                <div className="text-rose-700 font-bold flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>M{hoveredEnergy.mag.toFixed(1)} &mdash; {hoveredEnergy.title}</span>
+                </div>
+                <div className="text-[11px] text-slate-600 mt-0.5">
+                  Released: <strong className="text-rose-900">{hoveredEnergy.released}</strong> · Total: {hoveredEnergy.cum}
+                </div>
+                <div className="text-[10px] text-slate-400 mt-0.5">{hoveredEnergy.date}</div>
+              </div>
+            )}
           </div>
 
           <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-1">
-            <span>Formula: E = 10^(4.8 + 1.5 * M) Joules</span>
-            <span className="text-rose-700 font-semibold">~{kpis.tntMegatons.toFixed(2)} Megatons TNT</span>
+            <span>Formula: log₁₀ E = 4.8 + 1.5 * M (Joules)</span>
+            <span className="text-rose-700 font-semibold">{kpis.compactTnt} equivalent</span>
           </div>
         </div>
 
@@ -1178,7 +1468,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
                 <span>Figure 3.6 &mdash; Wadati-Benioff Subduction Profile</span>
               </div>
               <h2 className="text-base font-bold text-slate-900 mt-0.5">
-                Hypocentral Depth vs Epicentral Longitude
+                Hypocentral Depth vs Epicentral Longitude Cross-Section
               </h2>
             </div>
 
@@ -1194,34 +1484,98 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
           </div>
 
           <p className="text-xs text-slate-600 leading-relaxed">
-            Cross-sectional projection illustrating how hypocenters plunge into the asthenosphere along sinking tectonic slabs. Deep events (&gt;300 km) cluster exclusively along subduction trenches (Tonga, Japan, Kuril).
+            Cross-sectional projection illustrating how hypocenters plunge into the asthenosphere along descending oceanic lithospheric slabs. Deep events (&gt;300 km) cluster exclusively along subduction trenches (Tonga, Japan, Kuril, Sunda).
           </p>
 
-          <div className="w-full bg-slate-50/70 rounded-xl border border-slate-200 p-3 relative">
-            <svg id="svg-figure-3-6" className="w-full h-64 overflow-visible" viewBox="0 0 460 220">
-              <rect x="45" y="15" width="395" height="165" fill="#FFFFFF" rx="4" stroke="#E2E8F0" />
+          {/* Geological Depth Strata Legend */}
+          <div className="flex items-center gap-3 text-[11px] font-mono bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200 flex-wrap">
+            <span className="text-slate-500 font-bold">Lithosphere Strata:</span>
+            <span className="flex items-center gap-1 text-red-700 font-semibold">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
+              Crustal (&lt;70 km)
+            </span>
+            <span className="flex items-center gap-1 text-amber-700 font-semibold">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+              Subducting Slab (70–300 km)
+            </span>
+            <span className="flex items-center gap-1 text-indigo-700 font-semibold">
+              <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span>
+              Deep Mantle Wadati-Benioff (&gt;300 km)
+            </span>
+          </div>
 
-              {/* Depth Ticks (Downwards on Y-axis as depth increases!) */}
-              {[0, 150, 300, 450, 600].map((d) => {
-                const y = 15 + (d / 650) * 165;
+          <div className="w-full bg-slate-50/70 rounded-xl border border-slate-200 p-3 relative">
+            <svg id="svg-figure-3-6" className="w-full h-64 overflow-visible" viewBox="0 0 490 230">
+              {/* Background */}
+              <rect x="52" y="24" width="420" height="156" fill="#FFFFFF" rx="4" stroke="#CBD5E1" />
+
+              {/* Shaded Geological Strata Bands */}
+              {/* Band 1: Shallow Crustal (0 to 70 km) */}
+              <rect x="52" y="24" width="420" height="17" fill="rgba(239, 68, 68, 0.06)" />
+              <text x="56" y="36" fill="#DC2626" fontSize="8" fontFamily="sans-serif" fontWeight="600" opacity="0.8">
+                CRUSTAL ZONE (&lt;70 km)
+              </text>
+
+              {/* Band 2: Intermediate Slab (70 to 300 km) */}
+              <rect x="52" y="41" width="420" height="55" fill="rgba(245, 158, 11, 0.04)" />
+              <text x="56" y="55" fill="#D97706" fontSize="8" fontFamily="sans-serif" fontWeight="600" opacity="0.8">
+                SUBDUCTING LITHOSPHERIC SLAB (70 - 300 km)
+              </text>
+
+              {/* Band 3: Deep Asthenosphere (300 to 650 km) */}
+              <rect x="52" y="96" width="420" height="84" fill="rgba(79, 70, 229, 0.04)" />
+              <text x="56" y="112" fill="#4F46E5" fontSize="8" fontFamily="sans-serif" fontWeight="600" opacity="0.8">
+                MANTLE TRANSITION ZONE (&gt;300 km - Phase Change Dehydration)
+              </text>
+
+              {/* Major Subduction Trenches Annotated at Top */}
+              {[
+                { lon: -115, label: 'Cascadia / Andes' },
+                { lon: 0, label: 'Mid-Atlantic' },
+                { lon: 88, label: 'Himalayas / Sunda' },
+                { lon: 142, label: 'Japan / Marianas' },
+                { lon: 175, label: 'Tonga Trench' }
+              ].map((trench, idx) => {
+                const x = 52 + ((trench.lon + 180) / 360) * 420;
+                return (
+                  <g key={idx}>
+                    <line x1={x} y1="20" x2={x} y2="24" stroke="#6366F1" strokeWidth="1.5" />
+                    <text x={x} y="16" textAnchor="middle" fill="#4338CA" fontSize="8" fontFamily="monospace" fontWeight="bold">
+                      ▼ {trench.label}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Depth Grid Lines & Ticks */}
+              {[0, 70, 150, 300, 450, 600].map((d) => {
+                const y = 24 + (d / 650) * 156;
                 return (
                   <g key={d}>
-                    <line x1="45" y1={y} x2="440" y2={y} stroke="#E2E8F0" strokeDasharray="3,3" />
-                    <text x="38" y={y + 4} textAnchor="end" fill="#64748B" fontSize="9" fontFamily="monospace">
+                    <line
+                      x1="52"
+                      y1={y}
+                      x2="472"
+                      y2={y}
+                      stroke={d === 70 || d === 300 ? '#94A3B8' : '#E2E8F0'}
+                      strokeDasharray={d === 70 || d === 300 ? '4,2' : '3,3'}
+                    />
+                    <text x="46" y={y + 3.5} textAnchor="end" fill="#64748B" fontSize="9" fontFamily="monospace">
                       {d} km
                     </text>
                   </g>
                 );
               })}
 
-              {/* Longitude Ticks */}
-              {[-120, -60, 0, 60, 120, 180].map((lon) => {
-                const x = 45 + ((lon + 180) / 360) * 395;
+              {/* Longitude Grid Lines & Ticks */}
+              {[-180, -120, -60, 0, 60, 120, 180].map((lon) => {
+                const x = 52 + ((lon + 180) / 360) * 420;
                 return (
                   <g key={lon}>
                     <line x1={x} y1="180" x2={x} y2="185" stroke="#94A3B8" />
-                    <text x={x} y="198" textAnchor="middle" fill="#64748B" fontSize="9" fontFamily="monospace">
-                      {lon}°
+                    <line x1={x} y1="24" x2={x} y2="180" stroke="#F1F5F9" />
+                    <text x={x} y="197" textAnchor="middle" fill="#64748B" fontSize="9" fontFamily="monospace">
+                      {lon > 0 ? `+${lon}°` : `${lon}°`}
                     </text>
                   </g>
                 );
@@ -1229,31 +1583,60 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
 
               {/* Scatter Points */}
               {wadatiPoints.map((pt, idx) => {
-                const cx = 45 + ((pt.lon + 180) / 360) * 395;
-                const cy = 15 + (pt.depth / 650) * 165;
-                const r = Math.max(3, pt.mag * 0.9);
+                const cx = 52 + ((pt.lon + 180) / 360) * 420;
+                const cy = 24 + (pt.depth / 650) * 156;
+                const r = Math.max(3.2, Math.min(9, pt.mag * 0.95));
+                const color = pt.depth > 300 ? '#4F46E5' : pt.depth > 70 ? '#D97706' : '#DC2626';
+
                 return (
                   <circle
                     key={idx}
                     cx={cx}
                     cy={cy}
                     r={r}
-                    fill={pt.depth > 300 ? '#4F46E5' : pt.depth > 70 ? '#F59E0B' : '#EF4444'}
-                    opacity="0.75"
+                    fill={color}
+                    opacity="0.8"
                     stroke="#FFFFFF"
-                    strokeWidth="1"
-                    className="cursor-pointer hover:opacity-100 transition-all"
+                    strokeWidth="1.2"
+                    className="cursor-pointer hover:opacity-100 hover:scale-125 transition-transform"
+                    onClick={() => {
+                      if (pt.eq) onSelectQuake(pt.eq);
+                    }}
+                    onMouseEnter={() =>
+                      setHoveredWadati({
+                        place: pt.place,
+                        mag: pt.mag,
+                        depth: pt.depth,
+                        lon: pt.lon,
+                        lat: pt.lat
+                      })
+                    }
+                    onMouseLeave={() => setHoveredWadati(null)}
                   />
                 );
               })}
 
-              <text x="242" y="214" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold">
-                Epicentral Longitude (-180° to +180°)
+              {/* Axis Titles */}
+              <text x="262" y="215" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold">
+                Epicentral Longitude (-180° to +180° W/E) &mdash; Subduction Trench Cross-Sections
               </text>
-              <text x="14" y="95" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold" transform="rotate(-90 14,95)">
-                Hypocentral Depth (0 to 650 km)
+              <text x="14" y="102" textAnchor="middle" fill="#475569" fontSize="11" fontFamily="sans-serif" fontWeight="bold" transform="rotate(-90 14,102)">
+                Focal Depth (0 to 650 km)
               </text>
             </svg>
+
+            {/* Hover Tooltip Overlay for Figure 3.6 */}
+            {hoveredWadati && (
+              <div className="absolute top-8 right-6 bg-white/95 backdrop-blur-sm border border-indigo-200 px-3 py-2 rounded-xl text-xs font-mono text-slate-800 shadow-xl pointer-events-none">
+                <div className="text-indigo-700 font-bold">
+                  M{hoveredWadati.mag.toFixed(1)} &mdash; {hoveredWadati.place}
+                </div>
+                <div className="text-[11px] text-slate-600 mt-0.5">
+                  Focal Depth: <strong className="text-indigo-900">{hoveredWadati.depth.toFixed(1)} km</strong> · Coord: {hoveredWadati.lat.toFixed(2)}°, {hoveredWadati.lon.toFixed(2)}°
+                </div>
+                <div className="text-[10px] text-indigo-500 font-sans mt-0.5">Click point to view epicenter on Map</div>
+              </div>
+            )}
           </div>
 
           <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between pt-1">
