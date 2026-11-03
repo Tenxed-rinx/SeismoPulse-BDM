@@ -541,13 +541,13 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
         </div>
       </div>
 
-      {/* Interactive Country & Jurisdiction Slicer Ribbon */}
+      {/* Interactive Country Select Ribbon */}
       <div className="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 shadow-2xs space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="text-xs font-bold text-slate-900 uppercase font-mono tracking-wider flex items-center gap-1.5">
               <Globe2 className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Country / Jurisdiction Slicer:</span>
+              <span>Country Select:</span>
             </span>
 
             {/* Country Dropdown */}
@@ -1791,7 +1791,7 @@ export const PowerBIDashboard: React.FC<PowerBIDashboardProps> = ({ earthquakes,
             <thead>
               <tr className="border-b border-slate-200 text-slate-500 uppercase text-[10px] bg-slate-50">
                 <th className="py-2.5 px-3 font-semibold">Magnitude</th>
-                <th className="py-2.5 px-3 font-semibold">Epicenter / Jurisdiction</th>
+                <th className="py-2.5 px-3 font-semibold">Epicenter / Country</th>
                 <th className="py-2.5 px-3 font-semibold">Focal Depth</th>
                 <th className="py-2.5 px-3 font-semibold">Energy (TJ)</th>
                 <th className="py-2.5 px-3 font-semibold">Shaking (MMI)</th>
