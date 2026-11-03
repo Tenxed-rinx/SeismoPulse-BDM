@@ -76,8 +76,6 @@ export default function App() {
             onSelectQuake={setSelectedQuake}
             filters={filters}
             setFilters={setFilters}
-            activeFeed={activeFeed}
-            onChangeFeed={setActiveFeed}
             isLoading={isLoading}
             isActive={activeTab === 'map'}
           />

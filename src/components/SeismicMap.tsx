@@ -30,8 +30,8 @@ interface SeismicMapProps {
   onSelectQuake: (quake: Earthquake | null) => void;
   filters: FilterState;
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
-  activeFeed: string;
-  onChangeFeed: (feedKey: string) => void;
+  activeFeed?: string;
+  onChangeFeed?: (feedKey: string) => void;
   isLoading: boolean;
   isActive?: boolean;
 }
@@ -42,8 +42,6 @@ export const SeismicMap: React.FC<SeismicMapProps> = ({
   onSelectQuake,
   filters,
   setFilters,
-  activeFeed,
-  onChangeFeed,
   isLoading,
   isActive = true
 }) => {
@@ -755,8 +753,8 @@ export const SeismicMap: React.FC<SeismicMapProps> = ({
       {/* RIGHT SIDEBAR: SEARCH, FILTERS & SEISMIC LEDGER */}
       {/* ========================================================================= */}
       <div className="w-full md:w-96 bg-white border-t md:border-t-0 md:border-l border-slate-200 flex flex-col h-72 md:h-full overflow-hidden shrink-0 z-20 shadow-md">
-        {/* Top Header & Feed Selector */}
-        <div className="p-3.5 border-b border-slate-200 bg-slate-50/80 space-y-2.5">
+        {/* Top Header */}
+        <div className="p-3.5 border-b border-slate-200 bg-slate-50/80">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Flame className="w-4 h-4 text-amber-600" />
@@ -767,24 +765,6 @@ export const SeismicMap: React.FC<SeismicMapProps> = ({
             <span className="text-xs font-mono font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
               {filteredQuakes.length} quakes
             </span>
-          </div>
-
-          {/* Feed Selector Dropdown */}
-          <div className="flex items-center gap-1.5 bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs">
-            <span className="text-slate-500 font-bold font-mono">Feed:</span>
-            <select
-              value={activeFeed}
-              onChange={(e) => onChangeFeed(e.target.value)}
-              className="w-full bg-transparent text-slate-800 font-semibold outline-none cursor-pointer text-xs"
-            >
-              <option value="all_time">★ All-Time Global &amp; Indian Catalog</option>
-              <option value="ncs_live">🇮🇳 NCS Official Bulletin (Latest 150+ Events)</option>
-              <option value="india_catalog">🇮🇳 National Indian Network (NCS Live + Historical)</option>
-              <option value="month_25">Past 30 Days (M2.5+ Global)</option>
-              <option value="month_45">Past 30 Days (M4.5+ Heavy)</option>
-              <option value="week_25">Past 7 Days (M2.5+)</option>
-              <option value="day_all">Past 24 Hours (All Quakes)</option>
-            </select>
           </div>
         </div>
 
